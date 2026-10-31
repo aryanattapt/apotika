@@ -1,6 +1,6 @@
 # Apotek Digital
 
-Web responsif dan API awal untuk MVP Apotek Digital, mengikuti dokumen di `planning/`.
+Web responsif dan API awal untuk MVP Apotek Digital, mengikuti dokumen di `requirement/`.
 
 ## Menjalankan lokal
 
@@ -17,7 +17,7 @@ Prasyarat: Bun dan Docker Compose.
 
 ## Menjalankan seluruh stack dengan Docker
 
-Jalankan `docker compose up --build -d`, lalu buka `http://localhost:8080`. Compose menjalankan PostgreSQL, migrasi, API, dan web. Untuk memuat data contoh, jalankan `docker compose exec api bun apps/api/src/seed.ts`.
+Jalankan `docker compose up --build -d`, lalu buka `http://localhost:8080`. Compose menjalankan PostgreSQL, migrasi, API, dan web. Untuk memuat data contoh, jalankan `docker compose exec api bun apps/api/src/interfaces/cli/seed.ts`.
 
 Katalog dapat dijelajahi tanpa login. Untuk transaksi, daftar lalu gunakan tautan verifikasi yang ditampilkan pada mode development. Atur `MFA_ENCRYPTION_KEY` menjadi kunci acak 32 byte sebelum membuat akun internal melalui `bun run provision:user -- "Nama" email@contoh.id admin` atau role lain; staf apotek memerlukan ID apotek. Perintah provisioning menampilkan secret TOTP dan kode pemulihan satu kali. Jangan gunakan data atau resep nyata pada lingkungan pengembangan.
 
@@ -34,3 +34,7 @@ Katalog dapat dijelajahi tanpa login. Untuk transaksi, daftar lalu gunakan tauta
 Dokumen planning belum menetapkan penyedia pembayaran/kurir, tarif pengiriman, email/SMS, atau kebijakan refund final. Pengiriman belum aktif; pickup bisa digunakan. Pembuatan tagihan dan booking pengiriman mengembalikan `503` sampai adapter idempotent dipasang. Akun internal memakai TOTP MFA dan kode pemulihan sekali pakai. Jangan menganggap aplikasi ini siap produksi/pilot sebelum gerbang hukum, farmasi, keamanan, operasional, retensi data, malware scanning, object storage privat, notifikasi, backup, kebijakan refund, dan UAT di planning dipenuhi.
 
 Unggahan saat ini disimpan privat di `apps/api/storage/` dan folder tersebut dikecualikan dari Git. Produksi memerlukan object storage privat dan pemindaian malware. Data produk seed hanyalah data contoh untuk development.
+
+## Struktur kode
+
+Kode API dikelompokkan berdasarkan layer dan fitur, sedangkan komponen web dikelompokkan per alur. Lihat [ARCHITECTURE.md](ARCHITECTURE.md) untuk batas tanggung jawab dan panduan menambah fitur.

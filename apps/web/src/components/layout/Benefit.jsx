@@ -1,0 +1,1 @@
+export function Benefit({ icon: Icon, title, copy }) { return <div className="benefit"><span className="benefit-icon"><Icon size={18} /></span><span><strong>{title}</strong><small>{copy}</small></span></div> }
