@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto'
-import { API, ApiError, MAX_REQUEST_BODY_BYTES, WEB_ORIGIN, apiError, configureRequestIpResolver, errorJson, userForRequest } from './shared/api'
+import { API, ApiError, MAX_REQUEST_BODY_BYTES, WEB_ORIGIN, apiError, configureRequestIpResolver, cookieValue, errorJson } from './shared/api'
 import { route } from './interfaces/http/router'
 import { expireUnpaidOrders } from './application/jobs/expire-unpaid-orders'
+import { findUserForSessionToken } from './modules/identity'
 
 const server = Bun.serve({
   port: Number(process.env.API_PORT ?? 4000),
@@ -20,7 +21,7 @@ const server = Bun.serve({
     try {
       const contentLength = Number(request.headers.get('content-length') ?? 0)
       if (contentLength > MAX_REQUEST_BODY_BYTES) apiError(413, 'REQUEST_TOO_LARGE', 'Ukuran permintaan melebihi batas yang diizinkan.')
-      const user = await userForRequest(request)
+      const user = await findUserForSessionToken(cookieValue(request, 'apotek_session'))
       const path = new URL(request.url).pathname.slice(API.length)
       const publicWrite = ['/auth/register', '/auth/login', '/auth/contact-verification', '/auth/password-reset'].includes(path)
       if (user && !['GET', 'HEAD', 'OPTIONS'].includes(request.method) && !publicWrite && request.headers.get('x-csrf-token') !== user.csrfToken) {
