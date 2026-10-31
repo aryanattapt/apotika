@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: apotek
+      POSTGRES_USER: apotek
+      POSTGRES_PASSWORD: apotek_dev
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - apotek_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apotek -d apotek"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  api:
+    build:
+      context: .
+      target: api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://apotek:apotek_dev@db:5432/apotek
+      API_PORT: "4000"
+      WEB_ORIGIN: http://localhost:8080
+      MFA_ENCRYPTION_KEY: "${MFA_ENCRYPTION_KEY:-}"
+    command: ["sh", "-c", "bun apps/api/src/migrate.ts && exec bun apps/api/src/server.ts"]
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - apotek_uploads:/app/apps/api/storage
+  web:
+    build:
+      context: .
+      target: web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+volumes:
+  apotek_pgdata:
+  apotek_uploads:

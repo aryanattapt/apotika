@@ -1,0 +1,62 @@
+# Progres Implementasi Apotek Digital
+
+**Pembaruan:** 29 Oktober 2026  
+**Status umum:** Implementasi awal tersedia; belum siap untuk pilot atau produksi.
+
+Dokumen ini mencatat kondisi kode saat ini. Status fitur tidak berarti fitur sudah melewati UAT atau validasi operasional.
+
+## Sudah dikerjakan
+
+- Fondasi proyek React + Vite, API Bun, skema PostgreSQL, Docker Compose, contoh konfigurasi lingkungan, dan panduan menjalankan lokal.
+- Katalog produk, pencarian dan kategori, keranjang, akun pelanggan, sesi, alamat, checkout ambil di apotek, riwayat dan detail pesanan.
+- Quote menyimpan snapshot item dan harga. API memeriksa ulang harga dan stok saat pesanan dibuat, membuat reservasi stok dalam transaksi, dan mendukung kunci idempotensi.
+- Unggah resep privat pada penyimpanan lokal, antrean peninjauan apoteker, persetujuan/penolakan, permintaan klarifikasi, dan balasan pelanggan.
+- Panel apotek untuk antrean, koreksi alokasi stok daring, penyiapan dan pemeriksaan akhir, serta konfirmasi pengambilan dengan kode dan bukti.
+- Pencatatan lot dan tanggal kedaluwarsa untuk produk yang memerlukannya. Jumlah lot harus sesuai pesanan; lot kedaluwarsa ditolak. Pemeriksaan gagal membuka kasus operasional untuk CS.
+- Panel admin/operasional untuk katalog, stok dan harga, onboarding/status apotek, pesanan, permintaan pembatalan, dan kasus bantuan.
+- Sesi cookie HttpOnly, proteksi CSRF, otorisasi berbasis peran dan penugasan apotek, MFA TOTP untuk akun internal, audit, serta pembatasan jenis dan ukuran unggahan resep.
+- Batas ukuran seluruh body request API mengikuti batas unggahan resep dan diterapkan sebelum parsing.
+- Bucket rate limit yang kedaluwarsa dibersihkan berkala agar memori API tidak terus tumbuh.
+- Temuan review awal diperbaiki: klasifikasi dan aktivasi katalog dibatasi ke apoteker; order mengunci status apotek saat dibuat; referensi bukti pickup tersimpan lewat migrasi; file resep dibersihkan jika transaksi gagal.
+- Registrasi, verifikasi kontak, reset kata sandi, dan mutasi operasional/audit berjalan dalam transaksi; login membatasi kata sandi maksimum 128 karakter.
+- Validasi jam layanan menolak jam, tanggal, timezone, dan jadwal ganda yang tidak valid; seed menolak environment production.
+- Alur alamat pengiriman baru memakai alamat hasil simpan; panel katalog apoteker menampilkan kontrol buat dan aktivasi produk.
+- README menjelaskan cara menjalankan aplikasi dan batas kesiapan integrasi.
+
+## Status kebutuhan PRD
+
+| Kebutuhan | Status | Catatan |
+|---|---|---|
+| PR-01 Akun dan sesi | Sebagian | Alur akun dan verifikasi tersedia untuk development; pengiriman verifikasi dan pemulihan akses produksi belum terhubung. |
+| PR-02 Alamat dan pengambilan | Sebagian | Alamat dan pengambilan tersedia; pengiriman belum aktif. |
+| PR-03 Katalog | Dikerjakan | Katalog, pencarian, kategori, harga indikatif, dan penanda resep tersedia. |
+| PR-04 Keranjang dan pemeriksaan ulang | Dikerjakan | Harga/stok diperiksa kembali; perubahan quote memerlukan persetujuan ulang. |
+| PR-05 Pemilihan apotek | Sebagian | Sistem memilih satu apotek dengan stok; cakupan pengiriman menunggu integrasi kurir. |
+| PR-06 Pesanan dan stok | Dikerjakan | Reservasi stok atomik, pembatasan stok, kedaluwarsa reservasi belum dibayar, dan idempotensi tersedia. |
+| PR-07 Resep | Sebagian | Unggah, klarifikasi dan keputusan apoteker tersedia; SOP keaslian, pasien, resep elektronik/asli dan penggunaan ulang belum disahkan. |
+| PR-08 Pembayaran | Belum selesai | Adapter pembayaran dan webhook belum dipilih/dipasang; tagihan mengembalikan `503`. |
+| PR-09 Pemenuhan | Sebagian | Pemeriksaan, lot, kewenangan apoteker dan pickup tersedia; booking kurir/pengiriman belum aktif. |
+| PR-10 Pelacakan | Sebagian | Status dan riwayat pesanan tersedia; status pembayaran/pengiriman nyata bergantung pada adapter. |
+| PR-11 Pembatalan dan refund | Sebagian | Permintaan dan keputusan pembatalan tersedia; refund ke penyedia belum terhubung dan kebijakan final belum disetujui. |
+| PR-12 Admin dan audit | Sebagian | Alur admin dan pencatatan tindakan tersedia; validasi peran, audit dan UAT masih perlu dilakukan. |
+
+## Belum dikerjakan atau masih menunggu keputusan
+
+- Pilih serta integrasikan penyedia pembayaran dan kurir, tarif pengiriman, webhook, rekonsiliasi, dan refund.
+- Hubungkan layanan produksi untuk email/SMS, verifikasi kontak, dan pemulihan akun.
+- Pindahkan berkas resep ke object storage privat dan tambahkan pemindaian malware.
+- Sahkan kebijakan refund, ongkir/biaya, retensi, izin, peran pemrosesan data, SOP resep, kategori produk, dan prosedur pilot.
+- Tentukan apotek/wilayah pilot dan buktikan pemisahan stok daring dari stok kasir atau siapkan integrasi POS.
+- Siapkan backup dan pemulihan, monitoring/alert, pelatihan operasional, serta runbook insiden.
+- Jalankan migrasi pada database, UAT 38 skenario di IPD, uji keamanan/unggahan, uji beban, dan verifikasi pemulihan. Belum ada hasil pengujian tersebut.
+
+## Keputusan terbuka pada `09-Review-Report.md`
+
+- **D-01–D-03:** model stok, waktu reservasi/jam layanan, serta kategori dan SOP farmasi.
+- **D-04–D-05:** penyedia pembayaran/kurir dan kebijakan refund/biaya.
+- **D-06–D-07:** izin, privasi/retensi, wilayah pilot, anggaran, tim, SLA dan profil beban.
+
+## Pemeriksaan yang sudah dilakukan
+
+- Bundel API dan web berhasil dibuat dengan Bun setelah perbaikan review.
+- Pemeriksaan bundel tidak menjalankan migrasi pada PostgreSQL dan bukan bukti lulus UAT.

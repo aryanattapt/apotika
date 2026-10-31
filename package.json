@@ -1,0 +1,12 @@
+{
+  "name": "apotek-digital",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:web": "bun --cwd apps/web run dev",
+    "dev:api": "bun --cwd apps/api run dev",
+    "db:migrate": "bun --cwd apps/api run migrate",
+    "db:seed": "bun --cwd apps/api run seed",
+    "provision:user": "bun --cwd apps/api run provision:user"
+  }
+}

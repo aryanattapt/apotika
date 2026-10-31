@@ -1,0 +1,11 @@
+.git
+node_modules
+**/node_modules
+dist
+**/dist
+.env
+.env.*
+!.env.example
+apps/api/storage
+.worktmp
+*.log
