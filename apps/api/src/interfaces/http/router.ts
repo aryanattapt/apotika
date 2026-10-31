@@ -1,17 +1,18 @@
 import { API, apiError, json, requireUser } from '../../shared/api'
 import type { User } from '../../shared/api'
-import type { PublicRouteContext, AuthenticatedRouteContext } from './routes/route-context'
-import { handleSystemRoute } from './routes/system.routes'
-import { handleAuthRoutes } from './routes/auth.routes'
-import { handleCatalogRoutes } from './routes/catalog.routes'
-import { handleCustomerRoutes } from './routes/customer.routes'
-import { handleOrderRoutes } from './routes/orders.routes'
-import { handlePrescriptionRoutes } from './routes/prescription.routes'
-import { handlePaymentRoutes } from './routes/payment.routes'
-import { handleFulfillmentRoutes } from './routes/fulfillment.routes'
-import { handleSupportRoutes } from './routes/support.routes'
-import { handleAdminRoutes } from './routes/admin.routes'
-import { handlePharmacyRoutes } from './routes/pharmacy.routes'
+import type { PublicRouteContext, AuthenticatedRouteContext } from '../../shared/http/route-context'
+import { handleSystemRoute } from '../../modules/platform'
+import { handleAuthRoutes } from '../../modules/identity'
+import { handleCatalogRoutes } from '../../modules/catalog'
+import { handleCustomerRoutes } from '../../modules/customer'
+import { handleCheckoutRoutes } from '../../modules/checkout'
+import { handleOrderRoutes } from '../../modules/orders'
+import { handlePrescriptionRoutes } from '../../modules/prescriptions'
+import { handlePaymentRoutes } from '../../modules/payments'
+import { handleFulfillmentRoutes } from '../../modules/fulfillment'
+import { handleSupportRoutes } from '../../modules/support'
+import { handleAdminRoutes } from '../../modules/administration'
+import { handlePharmacyRoutes } from '../../modules/pharmacy'
 
 export async function route(request: Request, user: User | null, requestId: string): Promise<Response> {
   const url = new URL(request.url)
@@ -34,6 +35,7 @@ export async function route(request: Request, user: User | null, requestId: stri
   const authenticatedContext: AuthenticatedRouteContext = { ...context, user: currentUser, currentUser }
   const authenticatedHandlers = [
     handleCustomerRoutes,
+    handleCheckoutRoutes,
     handleOrderRoutes,
     handlePrescriptionRoutes,
     handlePaymentRoutes,
