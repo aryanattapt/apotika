@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "bun --env-file ../../.env --watch src/server.ts",
     "start": "bun --env-file ../../.env src/server.ts",
-    "migrate": "bun --env-file ../../.env src/migrate.ts",
-    "seed": "bun --env-file ../../.env src/seed.ts",
-    "provision:user": "bun --env-file ../../.env src/provision-user.ts"
+    "migrate": "bun --env-file ../../.env src/interfaces/cli/migrate.ts",
+    "seed": "bun --env-file ../../.env src/interfaces/cli/seed.ts",
+    "provision:user": "bun --env-file ../../.env src/interfaces/cli/provision-user.ts"
   },
   "dependencies": {
     "pg": "^8.16.3"

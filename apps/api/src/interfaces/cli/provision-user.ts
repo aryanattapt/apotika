@@ -1,6 +1,6 @@
 import { randomBytes, createHash } from 'node:crypto'
-import { pool } from './db'
-import { createTotpSecret, encryptMfaSecret } from './security'
+import { pool } from '../../infrastructure/database/client'
+import { createTotpSecret, encryptMfaSecret } from '../../infrastructure/security/mfa'
 
 const [name, email, role, pharmacyId] = process.argv.slice(2)
 const allowed = ['admin', 'cs', 'finance', 'pharmacist', 'pharmacy_staff']

@@ -1,4 +1,4 @@
-import { pool } from './db'
+import { pool } from '../../infrastructure/database/client'
 
 if (process.env.NODE_ENV === 'production') throw new Error('Seed data contoh tidak boleh dijalankan di production.')
 
