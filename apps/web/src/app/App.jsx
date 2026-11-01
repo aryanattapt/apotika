@@ -12,6 +12,7 @@ import { OrderModal } from '../features/orders/OrderModal.jsx'
 import { PharmacyWorkspace } from '../features/pharmacy/PharmacyWorkspace.jsx'
 import { AdminWorkspace } from '../features/admin/AdminWorkspace.jsx'
 import { Footer } from '../components/layout/Footer.jsx'
+import { InfoPage } from '../features/content/InfoPage.jsx'
 
 export function App() {
   const [products, setProducts] = useState([])
@@ -25,6 +26,7 @@ export function App() {
   const [authMode, setAuthMode] = useState('login')
   const [toast, setToast] = useState('')
   const [activeOrder, setActiveOrder] = useState(null)
+  const [infoPage, setInfoPage] = useState(() => new URLSearchParams(location.search).get('page') || '')
   const [loadingProducts, setLoadingProducts] = useState(true)
   const searchRef = useRef(null)
   const quantity = cart.reduce((sum, item) => sum + item.quantity, 0)
@@ -57,6 +59,12 @@ export function App() {
         .then((result) => { setToast(result.message); history.replaceState({}, '', location.pathname) })
         .catch((error) => setToast(error.message))
     }
+  }, [])
+
+  useEffect(() => {
+    const syncInfoPage = () => setInfoPage(new URLSearchParams(location.search).get('page') || '')
+    window.addEventListener('popstate', syncInfoPage)
+    return () => window.removeEventListener('popstate', syncInfoPage)
   }, [])
 
   useEffect(() => { localStorage.setItem('apotek-cart', JSON.stringify(cart)) }, [cart])
@@ -92,19 +100,38 @@ export function App() {
   const returnToShop = () => {
     const next = new URL(location.href)
     next.searchParams.delete('workspace')
+    next.searchParams.delete('page')
     history.pushState({}, '', next)
+    setInfoPage('')
     setPanel('')
     setActiveOrder(null)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const openInfoPage = (page) => {
+    const next = new URL(location.href)
+    next.searchParams.delete('workspace')
+    if (page) next.searchParams.set('page', page)
+    else next.searchParams.delete('page')
+    history.pushState({}, '', next)
+    setInfoPage(page || '')
+    setPanel('')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const showCatalog = () => {
+    returnToShop()
+    window.setTimeout(() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' }), 60)
   }
 
   if (panel === 'auth') return <AuthModal mode={authMode} setMode={setAuthMode} onClose={() => setPanel('')} onAuthenticated={(person) => { setUser(person); setCsrf(person.csrfToken); setPanel(''); setToast(`Halo, ${person.name.split(' ')[0]}!`) }} onToast={setToast} />
 
   return (
     <div className="app-shell">
-      <Header user={user} quantity={quantity} onCart={() => setPanel('cart')} onOrders={() => user ? setPanel('history') : (setAuthMode('login'),setPanel('auth'))} onLogin={() => { setAuthMode('login'); setPanel('auth') }} onLogout={logOut} onWorkspace={openWorkspace} workspace={workspace} onShop={returnToShop} />
+      <Header user={user} quantity={quantity} onCart={() => setPanel('cart')} onOrders={() => user ? setPanel('history') : (setAuthMode('login'),setPanel('auth'))} onLogin={() => { setAuthMode('login'); setPanel('auth') }} onLogout={logOut} onWorkspace={openWorkspace} workspace={workspace} onShop={returnToShop} onCatalog={showCatalog} onInfoPage={openInfoPage} />
       {workspace === 'pharmacy' ? <PharmacyWorkspace user={user} csrf={csrf} onLogin={() => { setAuthMode('login'); setPanel('auth') }} onBack={returnToShop} onToast={setToast} /> :
         workspace === 'admin' ? <AdminWorkspace user={user} csrf={csrf} onLogin={() => { setAuthMode('login'); setPanel('auth') }} onBack={returnToShop} onToast={setToast} /> : <>
-          <main>
+          {infoPage ? <InfoPage page={infoPage} onBack={returnToShop} onNavigate={openInfoPage} /> : <main>
             <section className="hero wrap">
               <div className="hero-copy">
                 <div className="eyebrow"><span className="eyebrow-dot" /> APOTEK PILIHAN, LEBIH DEKAT</div>
@@ -139,9 +166,9 @@ export function App() {
               {loadingProducts ? <div className="empty-state"><span className="loader" /> Memuat katalog...</div> : products.length ? <div className="product-grid">{products.map((product, index) => <ProductCard key={product.id} product={product} quantity={cart.find((item) => item.id === product.id)?.quantity || 0} onAdd={() => changeQuantity(product, 1)} onRemove={() => changeQuantity(product, -1)} delay={index * 40} />)}</div> : <div className="empty-state"><Search size={22} /><strong>Belum ada produk yang cocok</strong><span>Coba kata kunci atau kategori lain.</span><button className="button button-outline" onClick={() => { setQuery(''); setCategory('Semua produk'); loadProducts('', 'Semua produk') }}>Atur ulang pencarian</button></div>}
               <div className="catalog-footnote"><ShieldCheck size={15} /> Produk dengan label resep hanya dapat dibeli setelah ditinjau apoteker.</div>
             </section>
-            <section className="support-banner wrap"><div className="support-icon"><HeartPulse size={23} /></div><div><span className="section-kicker">BUTUH BANTUAN?</span><h3>Kesehatanmu, prioritas kami.</h3><p>Apoteker dan tim bantuan siap membantumu memahami proses pemesanan.</p></div><button className="button button-dark" onClick={() => setToast('Silakan masuk untuk menghubungi tim bantuan.')}>Hubungi kami <ArrowRight size={16} /></button><div className="banner-deco">✳</div></section>
-          </main>
-          <Footer onPolicy={() => setToast('Kebijakan dan informasi operasional akan disediakan sebelum pilot.')} />
+            <section className="support-banner wrap" id="support"><div className="support-icon"><HeartPulse size={23} /></div><div><span className="section-kicker">BUTUH BANTUAN?</span><h3>Kesehatanmu, prioritas kami.</h3><p>Apoteker dan tim bantuan siap membantumu memahami proses pemesanan.</p></div><button className="button button-dark" onClick={() => openInfoPage('support')}>Hubungi kami <ArrowRight size={16} /></button><div className="banner-deco">✳</div></section>
+          </main>}
+          <Footer onNavigate={openInfoPage} onCatalog={showCatalog} />
         </>}
       {panel === 'cart' && <CartDrawer cart={cart} subtotal={subtotal} onClose={() => setPanel('')} onChange={changeQuantity} onCheckout={openCheckout} />}
       {panel === 'checkout' && <CheckoutModal cart={cart} user={user} csrf={csrf} onClose={() => setPanel('')} onOrder={(order) => { setActiveOrder(order); setPanel('order'); setCart([]) }} onAuth={() => { setAuthMode('login'); setPanel('auth') }} onToast={setToast} />}
