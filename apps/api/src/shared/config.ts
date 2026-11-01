@@ -9,5 +9,6 @@ if (!Number.isSafeInteger(UPLOAD_MAX_BYTES) || UPLOAD_MAX_BYTES < 1) {
 }
 
 export const MAX_REQUEST_BODY_BYTES = UPLOAD_MAX_BYTES + 256 * 1024
-export const secureCookie = process.env.SESSION_COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production'
+export const secureCookie =
+  process.env.SESSION_COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production'
 export const serviceFee = Number(process.env.SERVICE_FEE ?? 0)

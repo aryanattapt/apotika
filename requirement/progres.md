@@ -1,4 +1,4 @@
-# Progres Implementasi Apotek Digital
+# Progres Implementasi FarmaGO
 
 **Pembaruan:** 29 Oktober 2026  
 **Status umum:** Implementasi awal tersedia; belum siap untuk pilot atau produksi.

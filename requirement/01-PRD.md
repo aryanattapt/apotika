@@ -1,4 +1,4 @@
-# Product Requirements Document — Apotek Digital MVP
+# Product Requirements Document — FarmaGO MVP
 
 **Versi:** 0.4 (draf ditinjau)  
 **Tanggal:** 28 Oktober 2026  
@@ -7,7 +7,7 @@
 
 ## 1. Ringkasan
 
-Apotek Digital adalah platform pembelian produk kesehatan dan penebusan resep yang menghubungkan pelanggan dengan apotek mitra. MVP mencakup aplikasi pelanggan, panel apotek, dan panel administrator. Setiap pesanan dipenuhi oleh satu apotek yang memenuhi wilayah layanan dan ketersediaan seluruh item.
+FarmaGO adalah platform pembelian produk kesehatan dan penebusan resep yang menghubungkan pelanggan dengan apotek mitra. MVP mencakup aplikasi pelanggan, panel apotek, dan panel administrator. Setiap pesanan dipenuhi oleh satu apotek yang memenuhi wilayah layanan dan ketersediaan seluruh item.
 
 Rancangan ini terinspirasi oleh fungsi publik K24Klik, bukan spesifikasi internal K24Klik atau afiliasi dengannya. Referensi: [FAQ K24Klik](https://www.k24klik.com/faq/index) dan [panduan pembelian](https://www.k24klik.com/cara-membeli-obat-online).
 

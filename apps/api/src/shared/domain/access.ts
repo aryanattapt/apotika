@@ -15,8 +15,11 @@ export function hasRole(user: User, ...roles: string[]) {
 }
 
 export function canAccessPharmacy(user: User, pharmacyId: string) {
-  return user.roles.some((entry) => ['admin', 'pharmacist', 'pharmacy_staff'].includes(entry.role)
-    && (entry.role === 'admin' || entry.pharmacyId === pharmacyId))
+  return user.roles.some(
+    (entry) =>
+      ['admin', 'pharmacist', 'pharmacy_staff'].includes(entry.role) &&
+      (entry.role === 'admin' || entry.pharmacyId === pharmacyId),
+  )
 }
 
 export function hasVerifiedContact(user: User) {

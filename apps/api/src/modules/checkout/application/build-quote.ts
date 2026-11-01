@@ -13,8 +13,20 @@ type StockProduct = {
   unit_price: string | number
 }
 
-type QuoteAddress = { recipientName: string; phone: string; addressText: string; city: string; postalCode: string } | null
-type QuoteTotals = { subtotal: string; discount: string; shippingFee: string; serviceFee: string; total: string }
+type QuoteAddress = {
+  recipientName: string
+  phone: string
+  addressText: string
+  city: string
+  postalCode: string
+} | null
+type QuoteTotals = {
+  subtotal: string
+  discount: string
+  shippingFee: string
+  serviceFee: string
+  total: string
+}
 
 export type QuoteSnapshot = {
   items: Array<{
@@ -76,6 +88,12 @@ export function buildQuoteSnapshot(input: {
     items: itemSnapshots,
     totals,
     needsPrescription: itemSnapshots.some((item) => item.requiresPrescription),
-    fingerprint: quoteFingerprint(input.pharmacyId, input.fulfillmentMethod, input.address, itemSnapshots, totals),
+    fingerprint: quoteFingerprint(
+      input.pharmacyId,
+      input.fulfillmentMethod,
+      input.address,
+      itemSnapshots,
+      totals,
+    ),
   }
 }

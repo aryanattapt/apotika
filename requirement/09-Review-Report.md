@@ -1,4 +1,4 @@
-# Catatan Review — Paket Dokumentasi Apotek Digital MVP
+# Catatan Review — Paket Dokumentasi FarmaGO MVP
 
 **Versi paket:** 0.4  
 **Tanggal review:** 28 Oktober 2026  

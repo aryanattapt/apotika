@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'bun:test'
-import { isValidServiceExceptions, isValidServiceHours, isWithinServiceHours, localServiceTime, validLocalDate } from './service-hours'
+import {
+  isValidServiceExceptions,
+  isValidServiceHours,
+  isWithinServiceHours,
+  localServiceTime,
+  validLocalDate,
+} from './service-hours'
 
 describe('pharmacy schedule domain', () => {
   test('validates local dates including leap days', () => {
@@ -9,7 +15,11 @@ describe('pharmacy schedule domain', () => {
   })
 
   test('converts an instant using the pharmacy timezone', () => {
-    expect(localServiceTime('Asia/Jakarta', new Date('2026-10-31T02:30:00.000Z'))).toEqual({ weekday: 6, minute: 570, date: '2026-10-31' })
+    expect(localServiceTime('Asia/Jakarta', new Date('2026-10-31T02:30:00.000Z'))).toEqual({
+      weekday: 6,
+      minute: 570,
+      date: '2026-10-31',
+    })
     expect(localServiceTime('invalid/time', new Date('2026-10-31T02:30:00.000Z'))).toBeNull()
   })
 
@@ -20,6 +30,10 @@ describe('pharmacy schedule domain', () => {
     expect(isValidServiceHours([hours])).toBe(true)
     expect(isValidServiceHours([hours, hours])).toBe(false)
     expect(isValidServiceExceptions([{ localDate: '2026-11-01', closed: true }])).toBe(true)
-    expect(isValidServiceExceptions([{ localDate: '2026-11-01', closed: false, opensAt: '18:00', closesAt: '09:00' }])).toBe(false)
+    expect(
+      isValidServiceExceptions([
+        { localDate: '2026-11-01', closed: false, opensAt: '18:00', closesAt: '09:00' },
+      ]),
+    ).toBe(false)
   })
 })

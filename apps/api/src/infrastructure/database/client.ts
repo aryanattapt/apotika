@@ -1,4 +1,6 @@
 import pg from 'pg'
+import { drizzle } from 'drizzle-orm/node-postgres'
+import * as schema from './schema'
 
 const { Pool } = pg
 const connectionString = process.env.DATABASE_URL
@@ -11,6 +13,8 @@ export const pool = new Pool({
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 5_000,
 })
+
+export const db = drizzle({ client: pool, schema })
 
 export async function transaction<T>(work: (client: pg.PoolClient) => Promise<T>) {
   const client = await pool.connect()

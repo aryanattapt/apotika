@@ -1,5 +1,16 @@
-export type ServiceHours = { weekday: number; opensAt: string; closesAt: string; timezone: string; active?: boolean }
-export type ServiceException = { localDate: string; closed: boolean; opensAt?: string; closesAt?: string }
+export type ServiceHours = {
+  weekday: number
+  opensAt: string
+  closesAt: string
+  timezone: string
+  active?: boolean
+}
+export type ServiceException = {
+  localDate: string
+  closed: boolean
+  opensAt?: string
+  closesAt?: string
+}
 
 export function validClock(value: unknown): value is string {
   return typeof value === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value)
@@ -7,7 +18,12 @@ export function validClock(value: unknown): value is string {
 
 export function validTimezone(value: unknown): value is string {
   if (typeof value !== 'string' || value.length > 100) return false
-  try { new Intl.DateTimeFormat('en-US', { timeZone: value }); return true } catch { return false }
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: value })
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function validLocalDate(value: unknown): value is string {
@@ -19,12 +35,22 @@ export function validLocalDate(value: unknown): value is string {
 export function localServiceTime(timeZone: string, instant = new Date()) {
   try {
     const pieces = new Intl.DateTimeFormat('en-US', {
-      timeZone, weekday: 'short', year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+      timeZone,
+      weekday: 'short',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
     }).formatToParts(instant)
     const values = Object.fromEntries(pieces.map((part) => [part.type, part.value]))
     const days: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
-    return { weekday: days[values.weekday], minute: Number(values.hour) * 60 + Number(values.minute), date: `${values.year}-${values.month}-${values.day}` }
+    return {
+      weekday: days[values.weekday],
+      minute: Number(values.hour) * 60 + Number(values.minute),
+      date: `${values.year}-${values.month}-${values.day}`,
+    }
   } catch {
     return null
   }
@@ -46,9 +72,16 @@ export function isValidServiceHours(hours: unknown): hours is ServiceHours[] {
     const value = entry as Record<string, unknown>
     const timezone = value.timezone ?? 'Asia/Jakarta'
     const weekday = value.weekday
-    const valid = typeof weekday === 'number' && Number.isInteger(weekday) && weekday >= 0 && weekday <= 6 && !weekdays.has(weekday)
-      && validClock(value.opensAt) && validClock(value.closesAt) && String(value.closesAt) > String(value.opensAt)
-      && validTimezone(timezone)
+    const valid =
+      typeof weekday === 'number' &&
+      Number.isInteger(weekday) &&
+      weekday >= 0 &&
+      weekday <= 6 &&
+      !weekdays.has(weekday) &&
+      validClock(value.opensAt) &&
+      validClock(value.closesAt) &&
+      String(value.closesAt) > String(value.opensAt) &&
+      validTimezone(timezone)
     if (valid) weekdays.add(weekday as number)
     return valid
   })
@@ -59,7 +92,13 @@ export function isValidServiceExceptions(exceptions: unknown): exceptions is Ser
   return exceptions.every((entry) => {
     if (!entry || typeof entry !== 'object') return false
     const value = entry as Record<string, unknown>
-    return validLocalDate(value.localDate) && typeof value.closed === 'boolean'
-      && (value.closed === true || (validClock(value.opensAt) && validClock(value.closesAt) && String(value.closesAt) > String(value.opensAt)))
+    return (
+      validLocalDate(value.localDate) &&
+      typeof value.closed === 'boolean' &&
+      (value.closed === true ||
+        (validClock(value.opensAt) &&
+          validClock(value.closesAt) &&
+          String(value.closesAt) > String(value.opensAt)))
+    )
   })
 }

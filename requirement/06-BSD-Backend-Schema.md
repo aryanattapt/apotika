@@ -1,4 +1,4 @@
-# Backend Schema Document — Apotek Digital MVP
+# Backend Schema Document — FarmaGO MVP
 
 **Versi:** 0.4 · **Runtime:** Bun · **Format:** REST/JSON  
 **Terkait:** [TRD](02-TRD.md) · [Database Design](05-DBD-Database-Design.md) · [Business Spec](07-BSD-Business-Spec.md)

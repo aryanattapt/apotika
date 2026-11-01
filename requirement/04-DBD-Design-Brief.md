@@ -1,4 +1,4 @@
-# Design Brief Document — Apotek Digital MVP
+# Design Brief Document — FarmaGO MVP
 
 **Versi:** 0.4 · **Status:** arahan desain awal ditinjau  
 **Terkait:** [PRD](01-PRD.md) · [App Flow](03-AFD-App-Flow.md)

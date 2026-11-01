@@ -14,7 +14,11 @@ import { handleSupportRoutes } from '../../modules/support'
 import { handleAdminRoutes } from '../../modules/administration'
 import { handlePharmacyRoutes } from '../../modules/pharmacy'
 
-export async function route(request: Request, user: User | null, requestId: string): Promise<Response> {
+export async function route(
+  request: Request,
+  user: User | null,
+  requestId: string,
+): Promise<Response> {
   const url = new URL(request.url)
   const context: PublicRouteContext = {
     request,
@@ -32,7 +36,11 @@ export async function route(request: Request, user: User | null, requestId: stri
   }
 
   const currentUser = requireUser(user)
-  const authenticatedContext: AuthenticatedRouteContext = { ...context, user: currentUser, currentUser }
+  const authenticatedContext: AuthenticatedRouteContext = {
+    ...context,
+    user: currentUser,
+    currentUser,
+  }
   const authenticatedHandlers = [
     handleCustomerRoutes,
     handleCheckoutRoutes,
@@ -49,8 +57,13 @@ export async function route(request: Request, user: User | null, requestId: stri
     if (response) return response
   }
 
-  return new Response(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Endpoint tidak ditemukan.', requestId } }), {
-    status: 404,
-    headers: { 'content-type': 'application/json' },
-  })
+  return new Response(
+    JSON.stringify({
+      error: { code: 'NOT_FOUND', message: 'Endpoint tidak ditemukan.', requestId },
+    }),
+    {
+      status: 404,
+      headers: { 'content-type': 'application/json' },
+    },
+  )
 }

@@ -1,6 +1,6 @@
-# Apotek Digital
+# FarmaGO
 
-Web responsif dan API awal untuk MVP Apotek Digital, mengikuti dokumen di `requirement/`.
+Web responsif dan API awal untuk MVP FarmaGO, mengikuti dokumen di `requirement/`.
 
 ## Menjalankan lokal
 
@@ -35,6 +35,12 @@ Dokumen planning belum menetapkan penyedia pembayaran/kurir, tarif pengiriman, e
 
 Unggahan saat ini disimpan privat di `apps/api/storage/` dan folder tersebut dikecualikan dari Git. Produksi memerlukan object storage privat dan pemindaian malware. Data produk seed hanyalah data contoh untuk development.
 
+## Tes API
+
+Jalankan unit test dan pemeriksaan batas arsitektur dengan `bun run test:api`.
+
 ## Struktur kode
 
-Kode API dikelompokkan berdasarkan layer dan fitur, sedangkan komponen web dikelompokkan per alur. Lihat [ARCHITECTURE.md](ARCHITECTURE.md) untuk batas tanggung jawab dan panduan menambah fitur.
+API dikelompokkan ke modul bisnis dengan layer domain, application, infrastructure, dan
+presentation. Komponen web dikelompokkan per alur. Lihat [ARCHITECTURE.md](ARCHITECTURE.md)
+untuk batas tanggung jawab dan panduan menambah fitur.

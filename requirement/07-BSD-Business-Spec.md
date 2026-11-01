@@ -1,4 +1,4 @@
-# Business Spec Document — Apotek Digital MVP
+# Business Spec Document — FarmaGO MVP
 
 **Versi:** 0.4 · **Status:** ditinjau; menunggu persetujuan bisnis, farmasi, dan legal  
 **Terkait:** [PRD](01-PRD.md) · [App Flow](03-AFD-App-Flow.md) · [Implementation Plan](08-IPD-Implementation-Plan.md)

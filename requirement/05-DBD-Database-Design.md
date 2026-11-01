@@ -1,4 +1,4 @@
-# Database Design Document — Apotek Digital MVP
+# Database Design Document — FarmaGO MVP
 
 **Versi:** 0.4 · **DBMS:** PostgreSQL · **Status:** rancangan konseptual dan logis ditinjau  
 **Terkait:** [TRD](02-TRD.md) · [Backend Schema](06-BSD-Backend-Schema.md)

@@ -1,4 +1,4 @@
-# Implementation Plan Document — Apotek Digital MVP
+# Implementation Plan Document — FarmaGO MVP
 
 **Versi:** 0.4 · **Status:** estimasi awal ditinjau, belum menjadi komitmen jadwal  
 **Terkait:** [PRD](01-PRD.md) · [TRD](02-TRD.md) · [Business Spec](07-BSD-Business-Spec.md)

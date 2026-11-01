@@ -1,4 +1,5 @@
 export { parseCartItems } from './domain/cart'
 export { quoteFingerprint } from './domain/quote-fingerprint'
 export { buildQuoteSnapshot } from './application/build-quote'
+export { createCheckoutQuote } from './public'
 export { handleCheckoutRoutes } from './presentation/http/routes'

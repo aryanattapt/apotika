@@ -3,7 +3,10 @@ import { readdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const dir = join(dirname(fileURLToPath(import.meta.url)), '../../infrastructure/database/migrations')
+const dir = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../infrastructure/database/migrations',
+)
 const client = await pool.connect()
 try {
   await client.query(`CREATE TABLE IF NOT EXISTS schema_migrations (

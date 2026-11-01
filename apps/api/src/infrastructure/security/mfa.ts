@@ -1,9 +1,16 @@
-import { createCipheriv, createDecipheriv, createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHmac,
+  randomBytes,
+  timingSafeEqual,
+} from 'node:crypto'
 
 function encryptionKey() {
   const raw = process.env.MFA_ENCRYPTION_KEY ?? ''
   const key = /^[a-f0-9]{64}$/i.test(raw) ? Buffer.from(raw, 'hex') : Buffer.from(raw, 'base64')
-  if (key.length !== 32) throw new Error('MFA_ENCRYPTION_KEY harus berupa 32 byte (64 karakter hex atau base64).')
+  if (key.length !== 32)
+    throw new Error('MFA_ENCRYPTION_KEY harus berupa 32 byte (64 karakter hex atau base64).')
   return key
 }
 
@@ -52,7 +59,8 @@ export function encryptMfaSecret(secret: string) {
 
 export function decryptMfaSecret(value: string) {
   const [iv, tag, encrypted] = value.split('.').map((part) => Buffer.from(part, 'base64url'))
-  if (!iv || !tag || !encrypted || iv.length !== 12 || tag.length !== 16) throw new Error('Invalid encrypted TOTP secret')
+  if (!iv || !tag || !encrypted || iv.length !== 12 || tag.length !== 16)
+    throw new Error('Invalid encrypted TOTP secret')
   const decipher = createDecipheriv('aes-256-gcm', encryptionKey(), iv)
   decipher.setAuthTag(tag)
   return Buffer.concat([decipher.update(encrypted), decipher.final()]).toString('utf8')

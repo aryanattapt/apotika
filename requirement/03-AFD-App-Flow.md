@@ -1,4 +1,4 @@
-# App Flow Document — Apotek Digital MVP
+# App Flow Document — FarmaGO MVP
 
 **Versi:** 0.4 · **Status:** draf ditinjau  
 **Terkait:** [PRD](01-PRD.md) · [Business Spec](07-BSD-Business-Spec.md)

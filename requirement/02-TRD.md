@@ -1,4 +1,4 @@
-# Technical Requirements Document — Apotek Digital MVP
+# Technical Requirements Document — FarmaGO MVP
 
 **Versi:** 0.4 · **Status:** draf teknis ditinjau  
 **Terkait:** [PRD](01-PRD.md) · [Database Design](05-DBD-Database-Design.md) · [Backend Schema](06-BSD-Backend-Schema.md)

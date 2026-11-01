@@ -1,9 +1,33 @@
 import { basename } from 'node:path'
-import { canAccessPharmacy, hasRole as hasDomainRole, hasVerifiedContact, type Role, type User } from './domain/access'
+import {
+  canAccessPharmacy,
+  hasRole as hasDomainRole,
+  hasVerifiedContact,
+  type Role,
+  type User,
+} from './domain/access'
 import { hash } from './security/hash'
-import { API, MAX_REQUEST_BODY_BYTES, RESERVATION_MINUTES, SESSION_SECONDS, UPLOAD_MAX_BYTES, WEB_ORIGIN, secureCookie, serviceFee } from './config'
+import {
+  API,
+  MAX_REQUEST_BODY_BYTES,
+  RESERVATION_MINUTES,
+  SESSION_SECONDS,
+  UPLOAD_MAX_BYTES,
+  WEB_ORIGIN,
+  secureCookie,
+  serviceFee,
+} from './config'
 
-export { API, MAX_REQUEST_BODY_BYTES, RESERVATION_MINUTES, SESSION_SECONDS, UPLOAD_MAX_BYTES, WEB_ORIGIN, secureCookie, serviceFee }
+export {
+  API,
+  MAX_REQUEST_BODY_BYTES,
+  RESERVATION_MINUTES,
+  SESSION_SECONDS,
+  UPLOAD_MAX_BYTES,
+  WEB_ORIGIN,
+  secureCookie,
+  serviceFee,
+}
 export { hash }
 export { amount, cents, money } from './domain/money'
 export type { Role, User }
@@ -18,7 +42,11 @@ export function configureRequestIpResolver(resolve: (request: Request) => string
 }
 
 export class ApiError extends Error {
-  constructor(public status: number, public code: string, message: string) {
+  constructor(
+    public status: number,
+    public code: string,
+    message: string,
+  ) {
     super(message)
   }
 }
@@ -34,18 +62,29 @@ export function json(data: unknown, status = 200, headers?: HeadersInit) {
 }
 
 export function errorJson(error: ApiError, requestId: string) {
-  return new Response(JSON.stringify({ error: { code: error.code, message: error.message, requestId } }), {
-    status: error.status,
-    headers: { 'content-type': 'application/json; charset=utf-8' },
-  })
+  return new Response(
+    JSON.stringify({ error: { code: error.code, message: error.message, requestId } }),
+    {
+      status: error.status,
+      headers: { 'content-type': 'application/json; charset=utf-8' },
+    },
+  )
 }
 
 export async function body<T>(request: Request): Promise<T> {
-  try { return await request.json() as T } catch { return apiError(400, 'INVALID_JSON', 'Isi permintaan tidak valid.') }
+  try {
+    return (await request.json()) as T
+  } catch {
+    return apiError(400, 'INVALID_JSON', 'Isi permintaan tidak valid.')
+  }
 }
 
 export function cookieValue(request: Request, name: string) {
-  const entry = request.headers.get('cookie')?.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${name}=`))
+  const entry = request.headers
+    .get('cookie')
+    ?.split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${name}=`))
   return entry ? decodeURIComponent(entry.slice(name.length + 1)) : null
 }
 
@@ -58,7 +97,10 @@ export function expiredCookie() {
 }
 
 export function limit(request: Request, scope: string, max = 30) {
-  const forwarded = process.env.TRUST_PROXY === 'true' ? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() : null
+  const forwarded =
+    process.env.TRUST_PROXY === 'true'
+      ? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      : null
   const ip = forwarded || requestIpResolver(request) || 'local'
   const key = `${scope}:${ip}`
   const now = Date.now()
@@ -68,7 +110,8 @@ export function limit(request: Request, scope: string, max = 30) {
   }
   const current = rateBuckets.get(key)
   if (!current || current.resetAt < now) rateBuckets.set(key, { count: 1, resetAt: now + 60_000 })
-  else if (++current.count > max) apiError(429, 'RATE_LIMITED', 'Terlalu banyak permintaan. Coba lagi sebentar.')
+  else if (++current.count > max)
+    apiError(429, 'RATE_LIMITED', 'Terlalu banyak permintaan. Coba lagi sebentar.')
 }
 
 export function requireUser(user: User | null): User {
@@ -81,15 +124,22 @@ export function hasRole(user: User, ...roles: string[]) {
 }
 
 export function requireRole(user: User, ...roles: string[]) {
-  if (!hasDomainRole(user, ...roles)) apiError(403, 'FORBIDDEN', 'Akses tidak diizinkan untuk akun ini.')
+  if (!hasDomainRole(user, ...roles))
+    apiError(403, 'FORBIDDEN', 'Akses tidak diizinkan untuk akun ini.')
 }
 
 export function pharmacyScope(user: User, pharmacyId: string) {
-  if (!canAccessPharmacy(user, pharmacyId)) apiError(403, 'PHARMACY_SCOPE_REQUIRED', 'Akses apotek ini tidak diizinkan.')
+  if (!canAccessPharmacy(user, pharmacyId))
+    apiError(403, 'PHARMACY_SCOPE_REQUIRED', 'Akses apotek ini tidak diizinkan.')
 }
 
 export function verified(user: User) {
-  if (!hasVerifiedContact(user)) apiError(422, 'CONTACT_NOT_VERIFIED', 'Verifikasi email atau nomor telepon sebelum bertransaksi.')
+  if (!hasVerifiedContact(user))
+    apiError(
+      422,
+      'CONTACT_NOT_VERIFIED',
+      'Verifikasi email atau nomor telepon sebelum bertransaksi.',
+    )
 }
 
 export function validUuid(value: string) {
@@ -97,7 +147,11 @@ export function validUuid(value: string) {
 }
 
 export function csvSafeName(name: string) {
-  return basename(name).replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120) || 'dokumen'
+  return (
+    basename(name)
+      .replace(/[^a-zA-Z0-9._-]/g, '_')
+      .slice(0, 120) || 'dokumen'
+  )
 }
 
 export function userJson(user: User) {

@@ -1,4 +1,4 @@
-# Arsitektur Apotika
+# Arsitektur FarmaGO
 
 API tetap satu aplikasi dan satu deployment, dengan batas modul berdasarkan kemampuan bisnis. Modul tidak dipisah menjadi service terpisah.
 
