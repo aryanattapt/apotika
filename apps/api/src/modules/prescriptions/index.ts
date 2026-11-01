@@ -1,10 +1,7 @@
 export { handlePrescriptionRoutes } from './presentation/http/routes'
 export {
   getPrescriptionFile,
-  getPrescriptionMessageOrder,
   getPrescriptionMessages,
-  hasOpenPrescriptionClarification,
-  recordPrescriptionFileViewed,
   reviewPrescriptionDocument,
   sendPrescriptionMessage,
   uploadPrescriptionFile,
