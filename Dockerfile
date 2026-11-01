@@ -25,7 +25,7 @@ COPY apps/web/package.json ./apps/web/package.json
 RUN bun install --filter @apotek/web --production
 
 COPY apps/web ./apps/web
-RUN bun --cwd apps/web run build
+RUN cd apps/web && bun run build
 
 FROM nginx:alpine AS web
 
