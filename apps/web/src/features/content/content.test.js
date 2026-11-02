@@ -43,4 +43,16 @@ describe('web information pages', () => {
       expect(markup).toContain(`href="?page=${id}"`)
     }
   })
+ 
+  test('footer includes its pharmacy and emergency guidance', () => {
+    const markup = renderToStaticMarkup(createElement(Footer, {
+      onNavigate: () => {},
+      onCatalog: () => {}
+    }))
+    expect(markup).toContain('Teman praktis untuk kebutuhan kesehatanmu')
+    expect(markup).toContain('Belanja lebih tenang')
+    expect(markup).toContain('Keputusan resep tetap pada apoteker berwenang.')
+    expect(markup).toContain('Belum untuk penggunaan darurat.')
+    expect(markup).toContain('Informasi produk mengikuti kemasan')
+  })
 })

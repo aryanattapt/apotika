@@ -1,4 +1,4 @@
-name: API CI
+name: API and Web CI
 
 on:
   push:
@@ -24,3 +24,7 @@ jobs:
         run: bun run --cwd apps/api test
       - name: Build API
         run: bun run --cwd apps/api build
+      - name: Run web unit tests
+        run: bun run --cwd apps/web test
+      - name: Build web
+        run: bun run --cwd apps/web build

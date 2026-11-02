@@ -6,7 +6,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "bun test src/features/content/content.test.js"
+    "test": "bun test src"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.4",
