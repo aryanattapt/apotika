@@ -57,7 +57,7 @@ describe('InfoPage', () => {
         page,
       }))
       const expectedLinks = relatedInfoPages.filter(([id]) => id !== page)
-      expect((markup.match(/<button(?:\\s|>)/g) || []).length).toBe(expectedLinks.length + 1)
+      expect((markup.match(/<button(?: |>)/g) || []).length).toBe(expectedLinks.length + 1)
       for (const [, label] of expectedLinks) expect(markup).toContain(label.replaceAll('&', '&amp;'))
     }
   })
