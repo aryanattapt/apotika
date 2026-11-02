@@ -6,6 +6,7 @@
     "dev:web": "bun run --cwd apps/web dev",
     "dev:api": "bun run --cwd apps/api dev",
     "test:api": "bun run --cwd apps/api test",
+    "test:web": "bun run --cwd apps/web test",
     "build:api": "bun run --cwd apps/api build",
     "db:migrate": "bun run --cwd apps/api migrate",
     "db:seed": "bun run --cwd apps/api seed",
