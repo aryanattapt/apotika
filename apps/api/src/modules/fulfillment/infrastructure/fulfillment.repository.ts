@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import { db, transaction } from '../../../infrastructure/database/client'
 import { orders } from '../../../infrastructure/database/schema'
 import { recordAudit } from '../../platform'
-import { canTransitionOrder, insertOrderStatusHistory } from '../../orders'
+import { canTransitionOrder, insertOrderStatusHistory, normalizePickupCode } from '../../orders'
 import { parseDispensedLots } from '../domain/dispensed-lots'
 import type {
   FulfillmentCheckRequestDto,
@@ -108,9 +108,10 @@ export class PostgresFulfillmentRepository implements FulfillmentRepository {
             'Hanya pesanan ambil di apotek yang siap dapat diselesaikan.',
           )
         const proofReference = String(input.proofReference ?? '').trim()
+        const pickupCode = normalizePickupCode(input.pickupCode)
         if (
-          !input.pickupCode ||
-          String(input.pickupCode).toUpperCase() !== order.pickup_code ||
+          !pickupCode ||
+          pickupCode !== order.pickup_code ||
           !proofReference ||
           proofReference.length > 200
         )

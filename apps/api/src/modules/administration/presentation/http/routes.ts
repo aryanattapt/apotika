@@ -48,7 +48,7 @@ export async function handleAdminRoutes({
     return json({ items: await getAdminSupportCases() })
   }
   if (path === '/admin/products' && method === 'POST') {
-    requireRole(currentUser, 'pharmacist')
+    requireRole(currentUser, 'admin')
     const input = await body<CreateProductRequestDto>(request)
     const saved = await createAdminProductRecord(currentUser.id, input)
     return json(saved, 201)
@@ -61,7 +61,7 @@ export async function handleAdminRoutes({
   }
   const adminProduct = path.match(/^\/admin\/products\/([0-9a-f-]+)$/i)
   if (adminProduct && method === 'PATCH') {
-    requireRole(currentUser, 'pharmacist')
+    requireRole(currentUser, 'admin')
     const input = await body<UpdateProductRequestDto>(request)
     const result = await updateAdminProductRecord(currentUser.id, adminProduct[1], input)
     return json(result)

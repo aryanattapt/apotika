@@ -61,9 +61,13 @@ export class PostgresCatalogRepository implements CatalogRepository {
         available: sql<number>`COALESCE(MAX(${inventory.onHand} - ${inventory.reserved}), 0)`,
       })
       .from(products)
-      .leftJoin(
+      .innerJoin(
         inventory,
         and(eq(inventory.productId, products.id), eq(inventory.salesBlocked, false)),
+      )
+      .innerJoin(
+        pharmacies,
+        and(eq(pharmacies.id, inventory.pharmacyId), eq(pharmacies.status, 'active')),
       )
       .where(
         and(

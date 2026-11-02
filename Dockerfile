@@ -3,8 +3,10 @@ FROM oven/bun:1-alpine AS api
 WORKDIR /app
 
 COPY package.json ./package.json
+COPY bun.lock ./bun.lock
 COPY apps/api/package.json ./apps/api/package.json
-RUN bun install --filter @apotek/api --production
+COPY apps/web/package.json ./apps/web/package.json
+RUN bun install --frozen-lockfile --filter @apotek/api --production
 
 COPY apps/api/src ./apps/api/src
 RUN addgroup -S app && adduser -S app -G app \
@@ -21,8 +23,10 @@ FROM oven/bun:1-alpine AS web-build
 WORKDIR /app
 
 COPY package.json ./package.json
+COPY bun.lock ./bun.lock
+COPY apps/api/package.json ./apps/api/package.json
 COPY apps/web/package.json ./apps/web/package.json
-RUN bun install --filter @apotek/web --production
+RUN bun install --frozen-lockfile --filter @apotek/web --production
 
 COPY apps/web ./apps/web
 RUN cd apps/web && bun run build

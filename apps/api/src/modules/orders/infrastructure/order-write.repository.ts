@@ -1,4 +1,3 @@
-import { randomBytes } from 'node:crypto'
 import { amount, cents, money } from '../../../shared/domain/money'
 import { RESERVATION_MINUTES, serviceFee } from '../../../shared/config'
 import { transaction } from '../../../infrastructure/database/client'
@@ -7,6 +6,7 @@ import { quoteFingerprint } from '../../checkout'
 import { prescriptionServiceOpen } from '../../pharmacy'
 import { insertOrderStatusHistory } from './order-history.repository'
 import { OrderWriteError, type OrderWriteRepository } from '../application/create-order'
+import { generatePickupCode } from '../domain/pickup-code'
 
 export class PostgresOrderWriteRepository implements OrderWriteRepository {
   create(input: {
@@ -151,7 +151,7 @@ export class PostgresOrderWriteRepository implements OrderWriteRepository {
           currentAddress,
           quote.fulfillment_method,
           status,
-          randomBytes(3).toString('hex').toUpperCase(),
+          generatePickupCode(),
           totals.subtotal,
           totals.shippingFee,
           totals.serviceFee,

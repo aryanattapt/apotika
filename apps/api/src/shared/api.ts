@@ -96,22 +96,52 @@ export function expiredCookie() {
   return `apotek_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0${secureCookie ? '; Secure' : ''}`
 }
 
-export function limit(request: Request, scope: string, max = 30) {
-  const forwarded =
-    process.env.TRUST_PROXY === 'true'
-      ? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      : null
-  const ip = forwarded || requestIpResolver(request) || 'local'
-  const key = `${scope}:${ip}`
+const RATE_BUCKET_CLEANUP_INTERVAL_MS = 10_000
+const RATE_BUCKET_WINDOW_MS = 60_000
+const MAX_RATE_BUCKETS = 25_000
+
+function consumeRateBucket(key: string, max: number, now: number) {
+  const current = rateBuckets.get(key)
+  if (current && current.resetAt > now) {
+    if (++current.count > max)
+      apiError(429, 'RATE_LIMITED', 'Terlalu banyak permintaan. Coba lagi sebentar.')
+    return
+  }
+  if (!current && rateBuckets.size >= MAX_RATE_BUCKETS)
+    apiError(429, 'RATE_LIMITED', 'Terlalu banyak permintaan. Coba lagi sebentar.')
+  rateBuckets.set(key, { count: 1, resetAt: now + RATE_BUCKET_WINDOW_MS })
+}
+
+export function limit(
+  request: Request,
+  scope: string,
+  max = 30,
+  subject?: string | readonly unknown[],
+) {
   const now = Date.now()
-  if (now - lastRateBucketCleanup >= 60_000) {
-    for (const [entry, bucket] of rateBuckets) if (bucket.resetAt <= now) rateBuckets.delete(entry)
+  if (now - lastRateBucketCleanup >= RATE_BUCKET_CLEANUP_INTERVAL_MS) {
+    for (const [entry, bucket] of rateBuckets)
+      if (bucket.resetAt <= now) rateBuckets.delete(entry)
     lastRateBucketCleanup = now
   }
-  const current = rateBuckets.get(key)
-  if (!current || current.resetAt < now) rateBuckets.set(key, { count: 1, resetAt: now + 60_000 })
-  else if (++current.count > max)
-    apiError(429, 'RATE_LIMITED', 'Terlalu banyak permintaan. Coba lagi sebentar.')
+
+  // Only trust the server-resolved peer IP; forwarded headers can be supplied by clients.
+  const ip = requestIpResolver(request) || 'local'
+  const values = typeof subject === 'string' ? [subject] : subject ?? []
+  const normalizedSubjects = [
+    ...new Set(
+      values
+        .filter((value): value is string => typeof value === 'string')
+        .map((value) => value.trim().toLowerCase())
+        .filter(Boolean),
+    ),
+  ]
+  const hasIdentityInput = subject !== undefined
+  const ipMax = hasIdentityInput ? Math.max(1_000, max * 100) : max
+  consumeRateBucket(scope + ':ip:' + ip, ipMax, now)
+
+  for (const value of normalizedSubjects)
+    consumeRateBucket(scope + ':subject:' + hash(scope + '\u0000' + value), max, now)
 }
 
 export function requireUser(user: User | null): User {

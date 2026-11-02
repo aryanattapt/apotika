@@ -19,7 +19,7 @@ export async function handlePrescriptionRoutes({
 }: AuthenticatedRouteContext): Promise<Response | null> {
   const uploadMatch = path.match(/^\/orders\/([0-9a-f-]+)\/prescriptions$/i)
   if (uploadMatch && method === 'POST') {
-    limit(request, 'prescription-upload', 10)
+    limit(request, 'prescription-upload', 10, currentUser.id)
     const form = await request.formData()
     const file = form.get('file')
     if (!(file instanceof File))
