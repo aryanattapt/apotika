@@ -13,10 +13,16 @@ export function canRequestRefund({
   requestedAmount,
 }: RefundCapacity): boolean {
   if (receivedAmount === null) return false
+  const received = cents(receivedAmount)
+  const alreadyRequested = cents(alreadyRequestedAmount)
   const requested = cents(requestedAmount)
   return (
+    Number.isFinite(received) &&
+    Number.isFinite(alreadyRequested) &&
     Number.isFinite(requested) &&
+    received >= 0 &&
+    alreadyRequested >= 0 &&
     requested > 0 &&
-    cents(alreadyRequestedAmount) + requested <= cents(receivedAmount)
+    alreadyRequested + requested <= received
   )
 }

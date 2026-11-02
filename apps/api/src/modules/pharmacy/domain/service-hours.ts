@@ -73,6 +73,7 @@ export function isValidServiceHours(hours: unknown): hours is ServiceHours[] {
     const timezone = value.timezone ?? 'Asia/Jakarta'
     const weekday = value.weekday
     const valid =
+      (value.active === undefined || typeof value.active === 'boolean') &&
       typeof weekday === 'number' &&
       Number.isInteger(weekday) &&
       weekday >= 0 &&

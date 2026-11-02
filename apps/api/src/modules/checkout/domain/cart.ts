@@ -14,8 +14,11 @@ export function parseCartItems(input: unknown): CartParseResult {
   for (const row of input) {
     if (!row || typeof row !== 'object') return { ok: false, reason: 'INVALID_ITEM' }
     const candidate = row as Record<string, unknown>
-    const productId = String(candidate.productId ?? '')
-    const quantity = Number(candidate.quantity)
+    const productId = String(candidate.productId ?? '').toLowerCase()
+    const rawQuantity = candidate.quantity
+    if (typeof rawQuantity !== 'string' && typeof rawQuantity !== 'number')
+      return { ok: false, reason: 'INVALID_ITEM' }
+    const quantity = Number(rawQuantity)
     if (!UUID.test(productId) || !Number.isInteger(quantity) || quantity < 1 || quantity > 20)
       return { ok: false, reason: 'INVALID_ITEM' }
     if (byId.has(productId)) return { ok: false, reason: 'DUPLICATE_PRODUCT' }
