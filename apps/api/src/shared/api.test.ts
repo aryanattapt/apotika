@@ -24,6 +24,16 @@ describe('API rate limits', () => {
     expect(() => limit(request(), 'login', 2, 'third@example.test')).not.toThrow()
   })
 
+  test('does not let repeated attempts against one identity consume the shared peer allowance', () => {
+    configureRequestIpResolver(() => 'shared-proxy')
+    limit(request(), 'login', 1, 'target@example.test')
+
+    for (let attempt = 0; attempt < 1_100; attempt++)
+      expect(() => limit(request(), 'login', 1, 'target@example.test')).toThrow(ApiError)
+
+    expect(() => limit(request(), 'login', 1, 'other@example.test')).not.toThrow()
+  })
+
   test('does not trust client-controlled forwarded headers as the source IP', () => {
     configureRequestIpResolver(() => 'reverse-proxy')
     limit(request('198.51.100.10'), 'legacy', 1)

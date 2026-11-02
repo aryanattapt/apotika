@@ -100,6 +100,12 @@ const RATE_BUCKET_CLEANUP_INTERVAL_MS = 10_000
 const RATE_BUCKET_WINDOW_MS = 60_000
 const MAX_RATE_BUCKETS = 25_000
 
+function assertRateBucketAvailable(key: string, max: number, now: number) {
+  const current = rateBuckets.get(key)
+  if (current && current.resetAt > now && current.count >= max)
+    apiError(429, 'RATE_LIMITED', 'Terlalu banyak permintaan. Coba lagi sebentar.')
+}
+
 function consumeRateBucket(key: string, max: number, now: number) {
   const current = rateBuckets.get(key)
   if (current && current.resetAt > now) {
@@ -138,10 +144,15 @@ export function limit(
   ]
   const hasIdentityInput = subject !== undefined
   const ipMax = hasIdentityInput ? Math.max(1_000, max * 100) : max
-  consumeRateBucket(scope + ':ip:' + ip, ipMax, now)
+  const ipKey = scope + ':ip:' + ip
+  const subjectKeys = normalizedSubjects.map(
+    (value) => scope + ':subject:' + hash(scope + '\u0000' + value),
+  )
 
-  for (const value of normalizedSubjects)
-    consumeRateBucket(scope + ':subject:' + hash(scope + '\u0000' + value), max, now)
+  assertRateBucketAvailable(ipKey, ipMax, now)
+  for (const key of subjectKeys) assertRateBucketAvailable(key, max, now)
+  for (const key of subjectKeys) consumeRateBucket(key, max, now)
+  consumeRateBucket(ipKey, ipMax, now)
 }
 
 export function requireUser(user: User | null): User {
